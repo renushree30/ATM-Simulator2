@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ATM Simulator</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .atm-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            width: 320px;
+        }
+        input, select, button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+        }
+        .output {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="atm-container">
+    <h2>ATM System</h2>
+    <div id="step1">
+        <label>Enter PIN:</label>
+        <input type="password" id="pin" />
+        <button onclick="checkPIN()">Enter</button>
+    </div>
+
+    <div id="step2" style="display:none;">
+        <label>Select Action:</label>
+        <select id="action">
+            <option value="1">Deposit</option>
+            <option value="2">Withdraw</option>
+            <option value="3">Check Balance</option>
+            <option value="4">Exit</option>
+        </select>
+
+        <label>Enter Amount (if needed):</label>
+        <input type="number" id="amount" />
+
+        <button onclick="processAction()">Submit</button>
+    </div>
+
+    <div class="output" id="output"></div>
+</div>
+
+<script>
+    let balance = 1000.00;
+    const correctPin = 4321;
+
+    function checkPIN() {
+        const enteredPin = parseInt(document.getElementById("pin").value);
+        if (enteredPin === correctPin) {
+            document.getElementById("step1").style.display = "none";
+            document.getElementById("step2").style.display = "block";
+            document.getElementById("output").textContent = "Welcome to the ATM!";
+        } else {
+            document.getElementById("output").textContent = "Incorrect PIN. Access Denied.";
+        }
+    }
+
+    function processAction() {
+        const action = document.getElementById("action").value;
+        const amount = parseFloat(document.getElementById("amount").value) || 0;
+        let message = "";
+
+        if (action === "1") {
+            if (amount > 0) {
+                balance += amount;
+                message = Deposit successful! New balance: ₹${balance.toFixed(2)};
+            } else {
+                message = "Invalid deposit amount.";
+            }
+        } else if (action === "2") {
+            if (amount > 0 && balance - amount >= 500) {
+                balance -= amount;
+                message = Withdrawal successful! New balance: ₹${balance.toFixed(2)};
+            } else {
+                message = "Cannot withdraw. Maintain minimum ₹500 balance.";
+            }
+        } else if (action === "3") {
+            message = Your current balance is: ₹${balance.toFixed(2)};
+        } else if (action === "4") {
+            message = "Exiting... Thank you!";
+            document.getElementById("step2").style.display = "none";
+        } else {
+            message = "Invalid choice.";
+        }
+
+        document.getElementById("output").textContent = message;
+    }
+</script>
+
+</body>
+</html>
