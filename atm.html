@@ -1,110 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ATM Simulator</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #eef2f3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .atm-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            width: 320px;
-        }
-        input, select, button {
-            width: 100%;
-            margin-top: 10px;
-            padding: 10px;
-        }
-        .output {
-            margin-top: 15px;
-            font-weight: bold;
-            min-height: 30px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>ATM Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e6f2ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .atm-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      width: 320px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .output {
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 40px;
+    }
+  </style>
 </head>
 <body>
-
-<div class="atm-container">
+  <div class="atm-container">
     <h2>ATM System</h2>
-    <div id="step1">
-        <label>Enter PIN:</label>
-        <input type="password" id="pin" />
-        <button onclick="checkPIN()">Enter</button>
+
+    <div id="login">
+      <label>Enter PIN:</label>
+      <input type="password" id="pinInput" placeholder="e.g. 4321">
+      <button onclick="login()">Enter</button>
     </div>
 
-    <div id="step2" style="display:none;">
-        <label>Select Action:</label>
-        <select id="action">
-            <option value="1">Deposit</option>
-            <option value="2">Withdraw</option>
-            <option value="3">Check Balance</option>
-            <option value="4">Exit</option>
-        </select>
+    <div id="menu" style="display: none;">
+      <label>Select Action:</label>
+      <select id="action">
+        <option value="deposit">Deposit</option>
+        <option value="withdraw">Withdraw</option>
+        <option value="balance">Check Balance</option>
+        <option value="exit">Exit</option>
+      </select>
 
-        <label>Enter Amount (if needed):</label>
-        <input type="number" id="amount" />
+      <label>Amount (if applicable):</label>
+      <input type="number" id="amountInput" placeholder="e.g. 500">
 
-        <button onclick="processAction()">Submit</button>
+      <button onclick="process()">Submit</button>
     </div>
 
     <div class="output" id="output"></div>
-</div>
+  </div>
 
-<script>
-    let balance = 1000.00;
+  <script>
     const correctPin = 4321;
+    let balance = 1000.00;
 
-    function checkPIN() {
-        const enteredPin = parseInt(document.getElementById("pin").value);
-        if (enteredPin === correctPin) {
-            document.getElementById("step1").style.display = "none";
-            document.getElementById("step2").style.display = "block";
-            document.getElementById("output").textContent = "Welcome to the ATM!";
-        } else {
-            document.getElementById("output").textContent = "Incorrect PIN. Access Denied.";
-        }
+    function login() {
+      const pin = parseInt(document.getElementById('pinInput').value);
+      const output = document.getElementById('output');
+
+      if (pin === correctPin) {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('menu').style.display = 'block';
+        output.textContent = 'Login successful. Welcome!';
+      } else {
+        output.textContent = 'Incorrect PIN. Try again.';
+      }
     }
 
-    function processAction() {
-        const action = document.getElementById("action").value;
-        const amount = parseFloat(document.getElementById("amount").value) || 0;
-        let message = "";
+    function process() {
+      const action = document.getElementById('action').value;
+      const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+      const output = document.getElementById('output');
 
-        if (action === "1") {
-            if (amount > 0) {
-                balance += amount;
-                message = Deposit successful! New balance: ₹${balance.toFixed(2)};
-            } else {
-                message = "Invalid deposit amount.";
-            }
-        } else if (action === "2") {
-            if (amount > 0 && balance - amount >= 500) {
-                balance -= amount;
-                message = Withdrawal successful! New balance: ₹${balance.toFixed(2)};
-            } else {
-                message = "Cannot withdraw. Maintain minimum ₹500 balance.";
-            }
-        } else if (action === "3") {
-            message = Your current balance is: ₹${balance.toFixed(2)};
-        } else if (action === "4") {
-            message = "Exiting... Thank you!";
-            document.getElementById("step2").style.display = "none";
+      if (action === 'deposit') {
+        if (amount > 0) {
+          balance += amount;
+          output.textContent = Deposit successful. New balance: ₹${balance.toFixed(2)};
         } else {
-            message = "Invalid choice.";
+          output.textContent = 'Enter a valid deposit amount.';
         }
+      } else if (action === 'withdraw') {
+        if (amount > 0 && balance - amount >= 500) {
+          balance -= amount;
+          output.textContent = Withdrawal successful. New balance: ₹${balance.toFixed(2)};
+        } else {
+          output.textContent = 'Cannot withdraw. Maintain ₹500 minimum balance.';
+        }
+      } else if (action === 'balance') {
+        output.textContent = Current balance: ₹${balance.toFixed(2)};
+      } else if (action === 'exit') {
+        document.getElementById('menu').style.display = 'none';
+        output.textContent = 'Thank you! Session ended.';
+      } else {
+        output.textContent = 'Invalid action.';
+      }
 
-        document.getElementById("output").textContent = message;
+      document.getElementById('amountInput').value = '';
     }
-</script>
-
+  </script>
 </body>
 </html>
